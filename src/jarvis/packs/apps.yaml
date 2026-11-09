@@ -1,0 +1,75 @@
+# Apps pack — "switch to firefox", "open vs code".
+#
+# Add your own apps by extending `lists.apps` in your jarvis.yaml. A spec may set:
+#   process      exe name(s); the most reliable match
+#   title        substring(s) of the window title
+#   title_regex  regex against the window title
+#   launch       shell command used when no window is found
+#   label        what Jarvis calls it back to you
+# Every key of `lists.apps` is a spoken alias, so add as many as you like.
+
+lists:
+  apps:
+    firefox:      {label: Firefox, process: firefox.exe, launch: 'start "" firefox.exe'}
+    fire fox:     {label: Firefox, process: firefox.exe, launch: 'start "" firefox.exe'}
+    chrome:       {label: Chrome, process: chrome.exe, launch: 'start "" chrome.exe'}
+    google chrome: {label: Chrome, process: chrome.exe, launch: 'start "" chrome.exe'}
+    edge:         {label: Edge, process: msedge.exe, launch: 'start "" msedge.exe'}
+    the browser:  {label: Firefox, process: firefox.exe, launch: 'start "" firefox.exe'}
+
+    code:         {label: VS Code, process: Code.exe, title: "Visual Studio Code", launch: code}
+    vs code:      {label: VS Code, process: Code.exe, title: "Visual Studio Code", launch: code}
+    vscode:       {label: VS Code, process: Code.exe, title: "Visual Studio Code", launch: code}
+    the editor:   {label: VS Code, process: Code.exe, title: "Visual Studio Code", launch: code}
+    cursor:       {label: Cursor, process: Cursor.exe, launch: cursor}
+
+    # Terminals. `process` lists every exe that counts as "a terminal", so
+    # "switch to terminal" reaches whichever you actually have open, and saying
+    # it again cycles to the next one. Windows Terminal hosts PowerShell, cmd
+    # and WSL in tabs under one process, which is why the exe is the thing to
+    # match on and the title is not.
+    terminal:
+      label: Terminal
+      process: [WindowsTerminal.exe, powershell.exe, pwsh.exe, cmd.exe,
+                alacritty.exe, WezTerm-gui.exe, ConEmu64.exe, mintty.exe]
+      launch: wt
+    the terminal: {label: Terminal, alias_of: terminal}
+    console:      {label: Terminal, alias_of: terminal}
+    the shell:    {label: Terminal, alias_of: terminal}
+    my terminal:  {label: Terminal, alias_of: terminal}
+
+    # …and the individual ones, for when you want a specific shell.
+    windows terminal: {label: Windows Terminal, process: WindowsTerminal.exe, launch: wt}
+    powershell:   {label: PowerShell, process: [pwsh.exe, powershell.exe], launch: 'start "" powershell.exe'}
+    command prompt: {label: Command Prompt, process: cmd.exe, launch: 'start "" cmd.exe'}
+    wsl:          {label: WSL, process: [wsl.exe, ubuntu.exe], title_regex: 'WSL|Ubuntu|Debian', launch: 'wt wsl'}
+    git bash:     {label: Git Bash, process: mintty.exe, title: MINGW,
+                   launch: 'start "" "C:\Program Files\Git\git-bash.exe"'}
+
+    explorer:     {label: File Explorer, process: explorer.exe, launch: explorer}
+    files:        {label: File Explorer, process: explorer.exe, launch: explorer}
+    notepad:      {label: Notepad, process: notepad.exe, launch: notepad}
+
+    slack:        {label: Slack, process: slack.exe, launch: 'start "" slack.exe'}
+    discord:      {label: Discord, process: Discord.exe, launch: 'start "" discord.exe'}
+    teams:        {label: Teams, process: ms-teams.exe, title: "Microsoft Teams"}
+    outlook:      {label: Outlook, process: outlook.exe, title: Outlook}
+    spotify:      {label: Spotify, process: Spotify.exe, launch: 'start "" spotify.exe'}
+    obsidian:     {label: Obsidian, process: Obsidian.exe}
+    notion:       {label: Notion, process: Notion.exe}
+    steam:        {label: Steam, process: steam.exe}
+    task manager: {label: Task Manager, process: Taskmgr.exe, launch: taskmgr}
+
+commands:
+  - id: apps.focus
+    description: Focus an app's window, launching it if it isn't running
+    phrases: ["switch to {app:apps}", "go to {app:apps}", "focus {app:apps}",
+              "open {app:apps}", "bring up {app:apps}", "show me {app:apps}"]
+    action: focus_app
+    args: {app: "{app}"}
+
+  - id: apps.launch-new
+    description: Always start a new instance, even if one is running
+    phrases: ["launch {app:apps}", "start {app:apps}", "new {app:apps} window"]
+    action: launch
+    args: {command: "{app.launch}"}

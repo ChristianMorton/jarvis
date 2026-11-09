@@ -1,0 +1,42 @@
+# Dictation pack — handing off to Wispr Flow for prose.
+#
+# Jarvis's own recogniser runs a *restricted grammar*: it can only hear the
+# words your commands use, which is exactly what makes short commands reliable
+# and exactly why it cannot take dictation. So dictation is Wispr Flow's job.
+#
+#   IMPORTANT: set `wispr.hotkey` in your jarvis.yaml to whatever you have
+#   actually bound in Wispr Flow's own settings. There is no way for Jarvis to
+#   read it, and the value below is only a plausible default.
+#
+# Wispr Flow's usual model is push-to-talk: hold the key, speak, release. If
+# yours is a toggle, set `wispr.mode: toggle` and "dictate"/"done" will send
+# the same hotkey twice rather than holding it.
+
+commands:
+  - id: dictation.start
+    description: Trigger Wispr Flow so you can speak prose into the focused field
+    phrases: ["dictate", "dictation", "take a note", "let me talk", "prompt"]
+    action: keys
+    args: {chord: "{wispr_hotkey|ctrl+shift+space}"}
+
+  - id: dictation.stop
+    description: Send the same hotkey again to end a toggle-style dictation
+    phrases: ["done dictating", "stop dictating", "end dictation"]
+    action: keys
+    args: {chord: "{wispr_hotkey|ctrl+shift+space}"}
+
+  - id: dictation.send
+    description: Finish dictating and submit — the usual end of a prompt
+    phrases: ["send it", "send that", "submit that", "go ahead"]
+    action: keys
+    args: {chord: enter}
+
+  - id: dictation.new-line
+    phrases: ["new line", "line break"]
+    action: keys
+    args: {chord: shift+enter}
+
+  - id: dictation.clear-field
+    phrases: ["clear that", "scrap that", "start over"]
+    action: keys
+    args: {chord: "ctrl+a delete"}

@@ -1,0 +1,158 @@
+# ============================================================================
+#  Jarvis — your configuration
+#
+#  Copy this to `jarvis.yaml` next to the project (or to
+#  %APPDATA%\Jarvis\config.yaml) and edit. Anything you leave out keeps its
+#  default, so a two-line file is a perfectly good config.
+#
+#  Everything here layers *over* the built-in packs. To change a built-in
+#  command, redefine it under `commands:` using the same `id:` — see
+#  `jarvis commands` for every id and phrase.
+# ============================================================================
+
+# --- the wake word ----------------------------------------------------------
+wake_word: jarvis
+
+# Vosk will sometimes hear something close but not exact. Any of these counts
+# as the wake word. Run `jarvis run` and watch what it actually prints when
+# you say "Jarvis" — if you see a consistent near-miss, add it here.
+wake_aliases: [jarvis, javis, jervis, harvest, service]
+
+# After a command, Jarvis stays listening this long so you can say the next
+# one without repeating the wake word. Set to 0 to require it every time.
+arm_seconds: 5.0
+arm_after_command: true
+
+# Set to false to drop the wake word entirely — every recognised command
+# fires. Only sane with a close-talking headset in a quiet room; "go to sleep"
+# is then your off switch.
+require_wake_word: true
+
+# "jarvis scroll down then next tab" runs both.
+chain_separators: [then]
+
+# Words thrown away before matching.
+fillers: [um, uh, er, please, the, okay, ok, now, hey]
+
+# --- speech model -----------------------------------------------------------
+model:
+  # Get one with:  python -m jarvis download-model small-en-us
+  # British English:              download-model small-en-gb
+  # Bigger + more accurate (1.8G, still supports the restricted grammar):
+  #                               download-model lgraph-en-us
+  path: models/vosk-model-small-en-us-0.15
+
+audio:
+  # null = system default. `jarvis devices` lists indices and names; you can
+  # put either an index (2) or a name substring ("Yeti") here.
+  device: null
+  samplerate: 16000
+  # Smaller = lower latency, more CPU. 4000 samples is 250ms at 16kHz.
+  blocksize: 4000
+
+recognition:
+  # Constrain the decoder to only the words your commands use. This is the
+  # single biggest accuracy win available, and the reason Jarvis cannot take
+  # dictation — that job goes to Wispr Flow. Turn it off only if your model
+  # rejects it (the plain large models do; small and lgraph are fine).
+  restrict_grammar: true
+
+  # How close a misheard word may be and still match, 0-1. The first letter
+  # must always agree, so this cannot turn "town" into "down". Raise toward
+  # 1.0 if Jarvis acts on things you did not say; lower if it ignores you.
+  fuzzy_threshold: 0.75
+
+  # Request partial recogniser results. The current command loop ignores them;
+  # leave false. This does not currently reduce command latency.
+  use_partials: false
+
+  # Words to add to the grammar that no command mentions — names, jargon, or
+  # anything you want available to a `{rest}` slot such as "type ...".
+  extra_words: []
+
+feedback:
+  beep: true          # a short tone the instant Jarvis acts. Keep this on.
+  log: true           # print what was heard and what was done
+  show_ignored: true  # also print speech that matched nothing (useful while tuning)
+  beep_hz:
+    arm: 880          # "I'm listening"
+    ok: 1320          # "done"
+    err: 220          # "that failed"
+
+# --- which packs to load ----------------------------------------------------
+# Drop any you do not want. `jarvis commands <search>` shows what is in each.
+packs: [core, navigation, apps, dictation, claude_code]
+
+# Turn off individual built-in commands by id.
+disable:
+  # - nav.grid-pick      # stops a bare number moving the mouse
+  # - nav.close-window   # if "close window" makes you nervous
+
+# --- values usable as {name} in any command's args --------------------------
+vars:
+  # SET THIS. Wispr Flow's trigger is whatever you bound in *its* settings;
+  # Jarvis has no way to read it. Open Wispr Flow → Settings → Shortcut, and
+  # put the same combination here.
+  wispr_hotkey: ctrl+shift+space
+
+# --- the screen grid --------------------------------------------------------
+grid:
+  rows: 3
+  cols: 3
+
+# --- your apps --------------------------------------------------------------
+# Every key is a spoken alias, so add as many ways of saying it as you like.
+# A spec may set: process (exe name — most reliable; may be a list), title
+# (substring), title_regex, launch (shell command when nothing is running),
+# label, or alias_of (reuse another entry's spec).
+#
+# Saying the same command again cycles to that app's next window, which is
+# mostly for terminals — you rarely have three browsers but often three shells.
+lists:
+  apps:
+    # my inbox:
+    #   label: Thunderbird
+    #   process: thunderbird.exe
+    #   launch: 'start "" thunderbird.exe'
+
+    # One definition, several ways of saying it:
+    # my shell: {alias_of: terminal}
+
+    # Narrow the built-in "terminal" to just the one you use:
+    # terminal:
+    #   label: WezTerm
+    #   process: WezTerm-gui.exe
+    #   launch: wezterm
+    # my project:
+    #   label: Example project
+    #   title_regex: 'Example Project'
+
+# --- your commands ----------------------------------------------------------
+commands:
+  # A new command:
+  # - id: my.standup
+  #   description: Open the standup doc
+  #   phrases: ["open standup", "standup doc"]
+  #   action: launch
+  #   args: {command: 'start "" https://example.com/standup'}
+
+  # Overriding a built-in — same id, new behaviour:
+  # - id: nav.scroll-down
+  #   phrases: ["scroll down", "down a bit"]
+  #   action: scroll
+  #   args: {direction: down, amount: 6}   # bigger jumps
+
+  # Several steps in order:
+  # - id: my.commit
+  #   phrases: ["commit everything"]
+  #   action: sequence
+  #   args:
+  #     steps:
+  #       - {action: type, args: {text: "git add -A && git commit"}}
+  #       - {action: keys, args: {chord: enter}}
+
+  # Capturing a spoken number:
+  # - id: my.volume
+  #   phrases: ["volume {n:number}"]
+  #   action: keys
+  #   args: {chord: volumeup, repeat: "{n}"}

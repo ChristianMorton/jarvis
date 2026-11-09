@@ -1,0 +1,249 @@
+# Navigation pack — scrolling, the mouse, and window management.
+
+commands:
+  # --- scrolling -------------------------------------------------------
+  - id: nav.scroll-down
+    phrases: ["scroll down", "down a bit", "scroll"]
+    action: scroll
+    args: {direction: down, amount: 3}
+
+  - id: nav.scroll-up
+    phrases: ["scroll up", "up a bit"]
+    action: scroll
+    args: {direction: up, amount: 3}
+
+  - id: nav.scroll-down-n
+    phrases: ["scroll down {amount:number}", "down {amount:number}"]
+    action: scroll
+    args: {direction: down, amount: "{amount}"}
+
+  - id: nav.scroll-up-n
+    phrases: ["scroll up {amount:number}", "up {amount:number}"]
+    action: scroll
+    args: {direction: up, amount: "{amount}"}
+
+  - id: nav.scroll-lots-down
+    phrases: ["scroll way down", "keep scrolling", "scroll a lot"]
+    action: scroll
+    args: {direction: down, amount: 15}
+
+  - id: nav.scroll-lots-up
+    phrases: ["scroll way up", "scroll back up"]
+    action: scroll
+    args: {direction: up, amount: 15}
+
+  - id: nav.page-down
+    phrases: ["page down", "next page"]
+    action: keys
+    args: {chord: pagedown}
+
+  - id: nav.page-up
+    phrases: ["page up", "previous page"]
+    action: keys
+    args: {chord: pageup}
+
+  - id: nav.top
+    phrases: ["go to top", "scroll to top", "top of page", "jump to top"]
+    action: keys
+    args: {chord: ctrl+home}
+
+  - id: nav.bottom
+    phrases: ["go to bottom", "scroll to bottom", "bottom of page", "jump to bottom"]
+    action: keys
+    args: {chord: ctrl+end}
+
+  # --- mouse -----------------------------------------------------------
+  - id: nav.click
+    phrases: ["click", "click that", "left click"]
+    action: click
+    args: {button: left, count: 1}
+
+  - id: nav.double-click
+    phrases: ["double click"]
+    action: click
+    args: {button: left, count: 2}
+
+  - id: nav.right-click
+    phrases: ["right click", "context menu"]
+    action: click
+    args: {button: right, count: 1}
+
+  - id: nav.middle-click
+    phrases: ["middle click"]
+    action: click
+    args: {button: middle, count: 1}
+
+  - id: nav.mouse-direction
+    phrases: ["mouse {direction:word}", "move mouse {direction:word}"]
+    action: mouse_move
+    args: {direction: "{direction}", distance: 120}
+
+  - id: nav.mouse-direction-n
+    phrases: ["mouse {direction:word} {distance:number}",
+              "move mouse {direction:word} {distance:number}"]
+    action: mouse_move
+    args: {direction: "{direction}", distance: "{distance}"}
+
+  - id: nav.mouse-centre
+    phrases: ["centre mouse", "center mouse", "mouse to centre", "mouse to center"]
+    action: mouse_center
+
+  # --- the recursive grid ---------------------------------------------
+  - id: nav.grid
+    description: Show the numbered screen grid
+    phrases: ["grid", "show grid", "where"]
+    action: grid_show
+
+  - id: nav.grid-pick
+    description: Zoom the grid into one cell
+    phrases: ["{cell:number}", "cell {cell:number}", "grid {cell:number}"]
+    action: grid_pick
+    args: {cell: "{cell}"}
+
+  - id: nav.grid-click
+    phrases: ["grid click {cell:number}", "click {cell:number}"]
+    action: grid_click
+    args: {cell: "{cell}"}
+
+  - id: nav.grid-off
+    phrases: ["grid off", "hide grid", "close grid"]
+    action: grid_hide
+
+  # --- windows ---------------------------------------------------------
+  - id: nav.maximize
+    phrases: ["maximise window", "maximize window", "full screen window"]
+    action: window
+    args: {do: maximize}
+
+  - id: nav.minimize
+    phrases: ["minimise window", "minimize window", "hide window"]
+    action: window
+    args: {do: minimize}
+
+  - id: nav.restore
+    phrases: ["restore window", "unmaximise window", "unmaximize window"]
+    action: window
+    args: {do: restore}
+
+  - id: nav.close-window
+    description: Closes the focused window — set confirm to true if that scares you
+    phrases: ["close window"]
+    action: window
+    args: {do: close}
+
+  - id: nav.snap-left
+    phrases: ["snap left", "window left"]
+    action: keys
+    args: {chord: win+left}
+
+  - id: nav.snap-right
+    phrases: ["snap right", "window right"]
+    action: keys
+    args: {chord: win+right}
+
+  - id: nav.next-window
+    phrases: ["next window", "switch window", "other window"]
+    action: switch_window
+    args: {steps: 1}
+
+  - id: nav.show-desktop
+    phrases: ["show desktop", "minimise everything", "minimize everything"]
+    action: keys
+    args: {chord: win+d}
+
+  - id: nav.task-view
+    phrases: ["task view", "show windows"]
+    action: keys
+    args: {chord: win+tab}
+
+  - id: nav.next-desktop
+    phrases: ["next desktop", "desktop right"]
+    action: keys
+    args: {chord: win+ctrl+right}
+
+  - id: nav.prev-desktop
+    phrases: ["previous desktop", "desktop left", "last desktop"]
+    action: keys
+    args: {chord: win+ctrl+left}
+
+  # --- tabs (browsers, editors, terminals all share these) -------------
+  - id: nav.new-tab
+    phrases: ["new tab"]
+    action: keys
+    args: {chord: ctrl+t}
+
+  - id: nav.close-tab
+    phrases: ["close tab"]
+    action: keys
+    args: {chord: ctrl+w}
+
+  - id: nav.reopen-tab
+    phrases: ["reopen tab", "undo close tab"]
+    action: keys
+    args: {chord: ctrl+shift+t}
+
+  - id: nav.next-tab
+    phrases: ["next tab"]
+    action: keys
+    args: {chord: ctrl+tab}
+
+  - id: nav.prev-tab
+    phrases: ["previous tab", "last tab", "back one tab"]
+    action: keys
+    args: {chord: ctrl+shift+tab}
+
+  - id: nav.tab-n
+    phrases: ["tab {n:number}", "go to tab {n:number}"]
+    action: press
+    args: {spoken: "control {n}"}
+
+  - id: nav.back
+    phrases: ["go back", "back"]
+    action: keys
+    args: {chord: alt+left}
+
+  - id: nav.forward
+    phrases: ["go forward", "forward"]
+    action: keys
+    args: {chord: alt+right}
+
+  - id: nav.reload
+    phrases: ["reload", "refresh", "reload page"]
+    action: keys
+    args: {chord: f5}
+
+  - id: nav.hard-reload
+    phrases: ["hard reload", "force refresh"]
+    action: keys
+    args: {chord: ctrl+shift+r}
+
+  - id: nav.find
+    phrases: ["find", "search page", "find on page"]
+    action: keys
+    args: {chord: ctrl+f}
+
+  - id: nav.find-text
+    phrases: ["find {text:rest}"]
+    action: sequence
+    args:
+      steps:
+        - {action: keys, args: {chord: ctrl+f}}
+        - {action: wait, args: {seconds: 0.15}}
+        - {action: type, args: {text: "{text}"}}
+
+  - id: nav.address-bar
+    phrases: ["address bar", "url bar", "focus address bar"]
+    action: keys
+    args: {chord: ctrl+l}
+
+  - id: nav.go-to-site
+    description: Open a URL in the focused browser
+    phrases: ["navigate to {text:rest}", "browse to {text:rest}",
+              "open the site {text:rest}"]
+    action: sequence
+    args:
+      steps:
+        - {action: keys, args: {chord: ctrl+l}}
+        - {action: wait, args: {seconds: 0.15}}
+        - {action: type, args: {text: "{text}"}}
+        - {action: keys, args: {chord: enter}}

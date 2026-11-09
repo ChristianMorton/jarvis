@@ -1,0 +1,29 @@
+01 / Parse and dispatch
+$ python -m jarvis test "scroll down five" "press control bravo"
+    -> scroll(-5, False)
+    -> beep(1320, 55)
+✓ "scroll down five"  scroll down 5
+    -> send_keys('ctrl+b', 1)
+    -> beep(1320, 55)
+✓ "press control bravo"  press ctrl+b
+
+02 / App aliases and command chains
+$ python -m jarvis test "switch to terminal" "scroll down then next tab"
+    -> activate('Windows PowerShell')
+    -> beep(1320, 55)
+✓ "switch to terminal"  focus Windows PowerShell
+    -> scroll(-3, False)
+    -> send_keys('ctrl+tab', 1)
+    -> beep(1320, 55)
+✓ "scroll down then next tab"  scroll down 3 ; keys ctrl+tab
+
+03 / Wake-word state machine
+$ python -m jarvis test --require-wake "scroll down" "jarvis" "scroll down" "stand down"
+· "scroll down"  no wake word
+    -> beep(880, 70)
+◉ "jarvis"  listening
+    -> scroll(-3, False)
+    -> beep(1320, 55)
+✓ "scroll down"  scroll down 3
+    -> beep(1320, 55)
+✓ "stand down"  standing down

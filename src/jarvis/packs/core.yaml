@@ -1,0 +1,126 @@
+# Core pack — controlling Jarvis itself, and pressing arbitrary keys.
+# Every command here can be overridden in your own jarvis.yaml by reusing its id.
+
+commands:
+  # --- Jarvis's own state ---------------------------------------------
+  - id: core.listen
+    description: Open the listening window without issuing a command
+    phrases: ["listen", "wake up", "are you there"]
+    action: arm
+
+  - id: core.stand-down
+    description: Close the listening window immediately
+    phrases: ["stand down", "never mind", "cancel that", "as you were"]
+    action: disarm
+
+  - id: core.sleep
+    description: Ignore everything until woken (the wake word still works)
+    phrases: ["go to sleep", "stop listening", "mute yourself"]
+    action: sleep
+
+  - id: core.wake
+    description: Undo "go to sleep"
+    phrases: ["start listening", "unmute yourself"]
+    action: wake
+
+  - id: core.repeat
+    description: Do the last command again
+    phrases: ["again", "do that again", "repeat that"]
+    action: repeat
+    args: {times: 1}
+
+  - id: core.repeat-n
+    description: Do the last command N more times
+    phrases: ["again {times:number} times", "repeat {times:number} times",
+              "do that {times:number} more times"]
+    action: repeat
+    args: {times: "{times}"}
+
+  - id: core.quit
+    description: Shut Jarvis down
+    phrases: ["shut down", "goodbye jarvis", "exit jarvis"]
+    action: quit
+
+  # --- arbitrary keys --------------------------------------------------
+  - id: core.press
+    description: Press a chord spoken in words, e.g. "press control shift p"
+    phrases: ["press {spoken:rest}", "hit {spoken:rest}", "key {spoken:rest}"]
+    action: press
+    args: {spoken: "{spoken}"}
+
+  - id: core.press-n
+    description: Press a single named key several times
+    phrases: ["press {spoken:word} {repeat:number} times"]
+    action: press
+    args: {spoken: "{spoken}", repeat: "{repeat}"}
+
+  - id: core.enter
+    phrases: ["enter", "hit enter", "submit", "confirm"]
+    action: keys
+    args: {chord: enter}
+
+  - id: core.escape
+    phrases: ["escape", "cancel", "dismiss"]
+    action: keys
+    args: {chord: escape}
+
+  - id: core.tab
+    phrases: ["tab", "next field"]
+    action: keys
+    args: {chord: tab}
+
+  - id: core.back-tab
+    phrases: ["back tab", "previous field"]
+    action: keys
+    args: {chord: shift+tab}
+
+  - id: core.backspace
+    phrases: ["backspace", "delete that", "rub out"]
+    action: keys
+    args: {chord: backspace}
+
+  - id: core.backspace-n
+    phrases: ["backspace {repeat:number}", "delete {repeat:number} characters"]
+    action: keys
+    args: {chord: backspace, repeat: "{repeat}"}
+
+  - id: core.select-all
+    phrases: ["select all"]
+    action: keys
+    args: {chord: ctrl+a}
+
+  - id: core.copy
+    phrases: ["copy", "copy that"]
+    action: keys
+    args: {chord: ctrl+c}
+
+  - id: core.paste
+    phrases: ["paste", "paste that"]
+    action: keys
+    args: {chord: ctrl+v}
+
+  - id: core.cut
+    phrases: ["cut", "cut that"]
+    action: keys
+    args: {chord: ctrl+x}
+
+  - id: core.undo
+    phrases: ["undo", "undo that"]
+    action: keys
+    args: {chord: ctrl+z}
+
+  - id: core.redo
+    phrases: ["redo", "redo that"]
+    action: keys
+    args: {chord: ctrl+y}
+
+  - id: core.save
+    phrases: ["save", "save file", "save that"]
+    action: keys
+    args: {chord: ctrl+s}
+
+  - id: core.type
+    description: Type a literal phrase (for short text; use Wispr Flow for prose)
+    phrases: ["type {text:rest}", "write {text:rest}"]
+    action: type
+    args: {text: "{text}"}

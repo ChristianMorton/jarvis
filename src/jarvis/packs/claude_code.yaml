@@ -1,0 +1,192 @@
+# Claude Code pack — reviewing and steering an agent by voice.
+#
+# The loop this is built around: Wispr Flow writes the prompt, Jarvis drives
+# everything either side of it — approving tool calls, reading diffs, escaping
+# out of a wrong turn.
+#
+# Terminal keys assume Windows Terminal / PowerShell defaults; the editor keys
+# assume VS Code defaults. Override any of them by reusing the id in your own
+# jarvis.yaml.
+
+commands:
+  # --- approving and rejecting ----------------------------------------
+  # Claude Code's permission prompt is a numbered list; 1 accepts, 2 accepts
+  # for the session, escape rejects.
+  - id: cc.accept
+    description: Accept the pending permission prompt
+    phrases: ["accept", "approve", "yes do it", "allow it", "go for it"]
+    action: keys
+    args: {chord: enter}
+
+  - id: cc.accept-always
+    description: Accept and don't ask again this session (option 2)
+    phrases: ["always accept", "accept always", "don't ask again", "allow always"]
+    action: keys
+    args: {chord: "2 enter"}
+
+  - id: cc.reject
+    description: Reject the pending prompt
+    phrases: ["reject", "deny", "no don't", "refuse that"]
+    action: keys
+    args: {chord: escape}
+
+  - id: cc.interrupt
+    description: Stop what Claude is doing right now
+    phrases: ["stop", "stop it", "interrupt", "abort", "halt"]
+    action: keys
+    args: {chord: escape}
+
+  - id: cc.hard-interrupt
+    description: Escape twice — stop, and rewind to edit the last message
+    phrases: ["stop and rewind", "back up", "undo my message"]
+    action: keys
+    args: {chord: "escape escape"}
+
+  - id: cc.cancel-run
+    description: Ctrl+C at the terminal
+    phrases: ["kill it", "cancel the command", "control c"]
+    action: keys
+    args: {chord: ctrl+c}
+
+  # --- modes -----------------------------------------------------------
+  - id: cc.cycle-mode
+    description: Shift+Tab cycles plan / accept-edits / normal
+    phrases: ["cycle mode", "change mode", "switch mode", "next mode"]
+    action: keys
+    args: {chord: shift+tab}
+
+  - id: cc.plan-mode
+    description: Two Shift+Tabs from normal lands on plan mode
+    phrases: ["plan mode", "planning mode"]
+    action: keys
+    args: {chord: shift+tab, repeat: 2}
+
+  - id: cc.auto-accept
+    description: One Shift+Tab from normal is accept-edits
+    phrases: ["auto accept", "accept edits mode", "auto mode"]
+    action: keys
+    args: {chord: shift+tab}
+
+  # --- moving through the conversation --------------------------------
+  - id: cc.previous-prompt
+    phrases: ["previous prompt", "last prompt", "history back"]
+    action: keys
+    args: {chord: up}
+
+  - id: cc.next-prompt
+    phrases: ["next prompt", "history forward"]
+    action: keys
+    args: {chord: down}
+
+  - id: cc.transcript
+    description: Ctrl+O toggles the full transcript view
+    phrases: ["show transcript", "expand output", "full output"]
+    action: keys
+    args: {chord: ctrl+o}
+
+  - id: cc.todos
+    description: Ctrl+T toggles the todo list
+    phrases: ["show todos", "show the plan", "what's left"]
+    action: keys
+    args: {chord: ctrl+t}
+
+  - id: cc.clear
+    phrases: ["clear the context", "clear session", "fresh session"]
+    action: sequence
+    args:
+      steps:
+        - {action: type, args: {text: "/clear"}}
+        - {action: keys, args: {chord: enter}}
+
+  # --- slash commands by voice ----------------------------------------
+  - id: cc.slash
+    description: Run any slash command — "jarvis slash review"
+    phrases: ["slash {name:rest}"]
+    action: sequence
+    args:
+      steps:
+        - {action: type, args: {text: "/{name}"}}
+        - {action: keys, args: {chord: enter}}
+
+  - id: cc.review
+    phrases: ["review the code", "code review", "review this"]
+    action: sequence
+    args:
+      steps:
+        - {action: type, args: {text: "/code-review"}}
+        - {action: keys, args: {chord: enter}}
+
+  # --- reading a diff --------------------------------------------------
+  # In the terminal these scroll the pane; in VS Code's diff view the editor
+  # pack's next/previous-change keys are usually what you want instead.
+  - id: cc.next-change
+    phrases: ["next change", "next diff", "next hunk"]
+    action: keys
+    args: {chord: alt+f5}
+
+  - id: cc.prev-change
+    phrases: ["previous change", "previous diff", "last change", "previous hunk"]
+    action: keys
+    args: {chord: alt+shift+f5}
+
+  - id: cc.read-on
+    description: Scroll a long response without leaving the prompt
+    phrases: ["read on", "keep reading", "more"]
+    action: scroll
+    args: {direction: down, amount: 6}
+
+  - id: cc.read-back
+    phrases: ["read back", "go back up", "what did it say"]
+    action: scroll
+    args: {direction: up, amount: 6}
+
+  # --- editor-side (VS Code defaults) ----------------------------------
+  - id: cc.command-palette
+    phrases: ["command palette", "palette"]
+    action: keys
+    args: {chord: ctrl+shift+p}
+
+  - id: cc.quick-open
+    phrases: ["quick open", "open file", "go to file"]
+    action: keys
+    args: {chord: ctrl+p}
+
+  - id: cc.go-to-line
+    phrases: ["go to line {n:number}"]
+    action: sequence
+    args:
+      steps:
+        - {action: keys, args: {chord: ctrl+g}}
+        - {action: wait, args: {seconds: 0.15}}
+        - {action: type, args: {text: "{n}"}}
+        - {action: keys, args: {chord: enter}}
+
+  - id: cc.toggle-terminal
+    phrases: ["toggle terminal", "show terminal", "hide terminal"]
+    action: keys
+    args: {chord: "ctrl+`"}
+
+  - id: cc.toggle-sidebar
+    phrases: ["toggle sidebar", "hide sidebar", "show sidebar"]
+    action: keys
+    args: {chord: ctrl+b}
+
+  - id: cc.source-control
+    phrases: ["source control", "show git", "git panel"]
+    action: keys
+    args: {chord: ctrl+shift+g}
+
+  - id: cc.problems
+    phrases: ["show problems", "show errors"]
+    action: keys
+    args: {chord: ctrl+shift+m}
+
+  - id: cc.format
+    phrases: ["format document", "format that"]
+    action: keys
+    args: {chord: shift+alt+f}
+
+  - id: cc.comment
+    phrases: ["comment that out", "toggle comment"]
+    action: keys
+    args: {chord: "ctrl+/"}

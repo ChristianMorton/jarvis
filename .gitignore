@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+
+# Vosk acoustic models are large; downloaded by scripts/download-model
+models/
+*.zip
+
+# Local user overrides
+jarvis.yaml
+jarvis.local.yaml
+logs/
+
+# Local credentials and recordings
+.env
+.env.*
+!.env.example
+*.wav
+*.pcm
+*.mp3
